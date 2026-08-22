@@ -49,7 +49,7 @@
 /* ── Monograma — foto + likes + crescimento para baixo + contexto recua ── */
 (function(){
   var mbg = document.getElementById("mBg");
-  if(mbg){ mbg.style.backgroundImage = "url('../assets/M_L-137.jpg')"; }
+  if(mbg){ mbg.style.backgroundImage = "url('../assets/photos/M_L-137.jpg')"; }
 
   var COLORS    = ["#0644BF","#2975D9","#5EADF2","#8DC3F2"];
   var clicks    = 0;
@@ -315,7 +315,7 @@
   if(!florL || !florR || !hdr || !hFlorL || !hFlorR) return;
 
   var DEFAULT_SRC = florL.getAttribute("src");
-  var SERENITY_SRC = "../assets/flor_serenity.png";
+  var SERENITY_SRC = "../assets/flowers/flor_serenity.png";
   var addrFlorL = document.getElementById("addrFlorL");
   var addrFlorR = document.getElementById("addrFlorR");
   var noivosFlorL = document.querySelector(".nf-bl");
