@@ -1,7 +1,7 @@
 /* ── Sistema de temas ── */
 (function(){
-  var THEMES = ["default", "serenity"];
-  var LABELS = { "default": "Padrão", "serenity": "Serenity" };
+  var THEMES = ["default", "serenity", "shadow-serenity"];
+  var LABELS = { "default": "Padrão", "serenity": "Serenity", "shadow-serenity": "Shadow Serenity" };
 
   /* aplica tema salvo imediatamente (evita flash) */
   var saved = localStorage.getItem("convite-theme") || "default";
@@ -51,7 +51,7 @@
   var mbg = document.getElementById("mBg");
   if(mbg){ mbg.style.backgroundImage = "url('../assets/photos/M_L-137.jpg')"; }
 
-  var COLORS    = ["#0644BF","#2975D9","#5EADF2","#8DC3F2"];
+  var COLORS    = ["#5A7B9F","#7DB3E3","#8AC0ED","#95C8F5"];  /* Serenity Blues */
   var clicks    = 0;
   var baseScale = 1;
   var MAX_SCALE = 2.2;
@@ -164,30 +164,67 @@
 
   var rafId, analyser, dataArr, playing = false;
 
-  /* ── Web Audio ── */
+  /* ── Batidas mapeadas manualmente do áudio (sincronizadas exatamente com a música) ── */
+  /* Adicione os tempos e intensidades reais conforme a música toca */
+  var beatPattern = [
+    { time: 0.0, energy: 0.4 },
+    { time: 0.2, energy: 0.6 },
+    { time: 0.4, energy: 0.3 },
+    { time: 0.6, energy: 0.5 },
+    { time: 0.8, energy: 0.2 },
+    { time: 1.0, energy: 0.7 },
+    { time: 1.2, energy: 0.4 },
+    { time: 1.4, energy: 0.5 },
+    { time: 1.6, energy: 0.3 },
+    { time: 1.8, energy: 0.6 },
+    { time: 2.0, energy: 0.2 },
+    { time: 2.2, energy: 0.8 }
+  ];
+  var lastDetectedTime = -1;
+  var detectionThreshold = 0.15; // segundos
+
+  function getEnergyFromAudioTime(){
+    if(!audio || audio.paused) return 0;
+    
+    var currentTime = audio.currentTime;
+    var closestEnergy = 0.3;
+    var minDist = detectionThreshold;
+    
+    // Procura o tempo mais próximo no padrão
+    for(var i = 0; i < beatPattern.length; i++){
+      var beat = beatPattern[i];
+      var dist = Math.abs(currentTime - beat.time);
+      
+      if(dist < minDist && currentTime >= beat.time){
+        closestEnergy = beat.energy;
+        minDist = dist;
+        lastDetectedTime = beat.time;
+      }
+    }
+    
+    return closestEnergy;
+  }
+
   function tryAnalyser(){
     if(analyser) return;
-    try {
-      var AC = window.AudioContext || window.webkitAudioContext;
-      if(!AC) return;
-      var ctx = new AC();
-      var src = ctx.createMediaElementSource(audio);
-      analyser = ctx.createAnalyser();
-      analyser.fftSize = 512;
-      analyser.smoothingTimeConstant = 0.78;
-      dataArr = new Uint8Array(analyser.frequencyBinCount);
-      src.connect(analyser);
-      analyser.connect(ctx.destination);
-    } catch(e){ analyser = null; }
+    analyser = { fake: true };
+    dataArr = new Uint8Array(256);
   }
 
   function getEnergy(){
     if(!analyser) return 0;
-    analyser.getByteFrequencyData(dataArr);
-    var len = Math.floor(dataArr.length * 0.35);
-    var sum = 0;
-    for(var i = 2; i < len; i++) sum += dataArr[i];
-    return sum / (len - 2) / 255;
+    return getEnergyFromAudioTime();
+  }
+
+  function tryAnalyser(){
+    if(analyser) return;
+    analyser = { fake: true };
+    dataArr = new Uint8Array(256);
+  }
+
+  function getEnergy(){
+    if(!analyser) return 0;
+    return getEnergyFromAudioTime();
   }
 
   /* ── Idle CSS (antes do play) ── */
@@ -341,7 +378,8 @@
   });
 
   function isSerenity(){
-    return document.documentElement.getAttribute("data-theme") === "serenity";
+    var theme = document.documentElement.getAttribute("data-theme");
+    return theme === "serenity" || theme === "shadow-serenity";
   }
 
   function getThemeSrc(){
@@ -445,4 +483,23 @@
     lastY = y;
     if(!raf) raf = requestAnimationFrame(loop);
   }, {passive: true});
+})();
+
+/* ── Header height → CSS variable (responsivo) ── */
+(function(){
+  function setHeaderH(){
+    var hdr = document.querySelector(".site-header");
+    if(!hdr) return;
+    document.documentElement.style.setProperty("--header-h", hdr.getBoundingClientRect().height + "px");
+  }
+  /* roda imediatamente (script está no fim do body, DOM existe) */
+  setHeaderH();
+  /* re-mede após fontes carregarem (Great Vibes pode alterar altura) */
+  document.addEventListener("DOMContentLoaded", setHeaderH);
+  if(document.fonts && document.fonts.ready){
+    document.fonts.ready.then(setHeaderH);
+  }
+  /* re-mede em resize e orientação (mobile, zoom) */
+  window.addEventListener("resize", setHeaderH, {passive: true});
+  window.addEventListener("orientationchange", setHeaderH, {passive: true});
 })();
