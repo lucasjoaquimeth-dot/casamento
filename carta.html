@@ -13,16 +13,15 @@
     html, body {
       width: 100%;
       height: 100%;
-      /* Fundo em gradiente vertical seguindo as divisões da carta */
       background: linear-gradient(
         to bottom,
-        #5a7d9f 0%,        /* Azul do envelope - topo */
-        #6b8ba8 20%,       /* Azul mais claro */
-        #8b9fb8 35%,       /* Azul mais claro ainda */
-        #a0a895 50%,       /* Transição para bege */
-        #b8a788 65%,       /* Bege/terra da foto */
-        #9d8e75 85%,       /* Bege mais escuro */
-        #8b7d6b 100%       /* Base mais escura */
+        #5a7d9f 0%,
+        #6b8ba8 20%,
+        #8b9fb8 35%,
+        #a0a895 50%,
+        #b8a788 65%,
+        #9d8e75 85%,
+        #8b7d6b 100%
       );
       display: flex;
       align-items: center;
@@ -31,7 +30,6 @@
       overflow-x: hidden;
     }
 
-    /* Fundo desfocado que preenche as laterais */
     body::before {
       content: '';
       position: fixed;
@@ -49,14 +47,9 @@
       z-index: 0;
     }
 
-    /* ════════════════════════════════════════════
-       CARD — proporção 9:16, centralizado na tela
-       Layout vertical (retrato)
-    ════════════════════════════════════════════ */
     .card {
       position: relative;
       z-index: 1;
-      /* Cabe na tela: cresce até 480px de largura ou até caber em altura */
       width: min(480px, 56.25dvh, 100vw);
       aspect-ratio: 9 / 16;
       overflow: hidden;
@@ -64,9 +57,6 @@
       box-shadow: 0 8px 60px rgba(0, 0, 0, 0.7);
     }
 
-    /* ════════════════════════════════════════════
-       IMAGEM ÚNICA — preenche o card inteiro
-    ════════════════════════════════════════════ */
     .card-img {
       position: absolute;
       inset: 0;
@@ -77,18 +67,11 @@
       z-index: 1;
     }
 
-    /* ════════════════════════════════════════════
-       SELO CLICÁVEL — sobre o lacre dourado
-       O lacre fica na parte superior do card,
-       aproximadamente a 30% da altura total
-    ════════════════════════════════════════════ */
     .seal-link {
       position: absolute;
-      left: 50%;
-      /* Lacre fica em ~28% da altura do card (no envelope) */
+      left: 71%;
       top: 28%;
       transform: translate(-50%, -50%);
-      /* Tamanho proporcional à largura do card */
       width: clamp(36px, 14cqw, 88px);
       aspect-ratio: 1;
       border-radius: 50%;
@@ -112,23 +95,36 @@
 
     .seal-hint {
       position: absolute;
-      bottom: -clamp(18px, 5cqw, 26px);
-      left: 50%;
-      transform: translateX(-50%);
+      right: -clamp(140px, 30cqw, 220px);
+      top: 50%;
+      transform: translateY(-50%);
       white-space: nowrap;
-      font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(8px, 2.2cqw, 12px);
-      letter-spacing: 0.22em;
-      color: rgba(220, 195, 120, 0.95);
-      text-transform: uppercase;
+      font-family: Arial, sans-serif;
+      font-size: clamp(10px, 1.75cqw, 15px);
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: #5a7d9f;
+      background: #ffffff;
+      padding: clamp(5px, 1cqw, 7px) clamp(7px, 1.5cqw, 10px);
+      border-radius: clamp(4px, 0.8cqw, 7px);
+      border: 1px solid #d4af37;
+      box-shadow: 
+        0 3px 10px rgba(0, 0, 0, 0.2),
+        inset 0 0.5px 0 rgba(255, 255, 255, 0.8),
+        0 0 0 2px rgba(212, 175, 55, 0.2);
       pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.3s;
+      opacity: 1;
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      z-index: 11;
     }
 
     .seal-link:hover .seal-hint,
     .seal-link:focus-visible .seal-hint {
-      opacity: 1;
+      transform: translateY(-50%) scale(1.05);
+      box-shadow: 
+        0 4px 12px rgba(0, 0, 0, 0.25),
+        inset 0 0.5px 0 rgba(255, 255, 255, 0.9),
+        0 0 10px rgba(212, 175, 55, 0.3);
     }
 
     @keyframes sealPulse {
@@ -136,7 +132,6 @@
       50%       { filter: drop-shadow(0 0 18px rgba(210, 170, 60, 0.65)); }
     }
 
-    /* Vinheta lateral suave */
     .vignette {
       position: absolute;
       inset: 0;
@@ -149,14 +144,9 @@
       z-index: 6;
     }
 
-    /* container-query para cqw funcionar */
     .card { container-type: inline-size; }
 
-    /* ════════════════════════════════════════════
-       RESPONSIVIDADE MOBILE
-    ════════════════════════════════════════════ */
     @media (max-width: 768px) {
-      /* Em telas pequenas, o card se adapta melhor */
       .card {
         width: min(calc(100vw - 16px), 480px);
         aspect-ratio: 9 / 16;
@@ -166,9 +156,14 @@
         width: clamp(32px, 12cqw, 80px);
         top: 28%;
       }
+
+      .seal-hint {
+        font-size: clamp(6px, 1.5cqw, 9px);
+        right: -clamp(120px, 25cqw, 180px);
+        padding: clamp(4px, 0.8cqw, 6px) clamp(6px, 1.2cqw, 8px);
+      }
     }
 
-    /* Em telas muito pequenas (mobile) */
     @media (max-width: 480px) {
       .card {
         width: calc(100vw - 12px);
@@ -182,8 +177,9 @@
       }
 
       .seal-hint {
-        bottom: -clamp(16px, 4.5cqw, 22px);
-        font-size: clamp(7px, 1.8cqw, 10px);
+        font-size: clamp(5px, 1.25cqw, 7px);
+        right: -clamp(100px, 20cqw, 150px);
+        padding: clamp(4px, 0.8cqw, 5px) clamp(5px, 1cqw, 7px);
       }
     }
   </style>
@@ -206,7 +202,7 @@
     href="convite/index.html"
     aria-label="Abrir convite de casamento de Mayane e Lucas"
   >
-    <span class="seal-hint">abrir convite</span>
+    <span class="seal-hint">Clique para abrir</span>
   </a>
 
   <!-- 4 ── VINHETA lateral -->
