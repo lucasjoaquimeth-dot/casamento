@@ -6,36 +6,11 @@ img{display:block;max-width:100%;}
 a{text-decoration:none;color:inherit;}
 
 /* ══════════════════════════════════════════
-   TEMA PADRÃO — palheta_cores.jpeg
-   #0644BF · #2975D9 · #5EADF2 · #8DC3F2
-══════════════════════════════════════════ */
-:root{
-  --azul1:   #0644BF;
-  --azul2:   #2975D9;
-  --azul3:   #5EADF2;
-  --azul4:   #8DC3F2;
-  --verde:   #2975D9;
-  --verde2:  #0644BF;
-  --azul:    #5EADF2;
-  --creme:   #f4f7fc;
-  --creme2:  #eaeff8;
-  --header-bg: rgba(244,247,252,.28); /* fundo glass do header */
-  --madeira: #8b5e3c;
-  --rosa:    #d4a090;
-  --ink:     #12213d;
-  --ink2:    #3a5080;
-  --muted:   rgba(41,117,217,0.42);
-  --sep:     rgba(94,173,242,0.28);
-  --sep2:    rgba(141,195,242,0.18);
-  --theme-name: "Padrão";
-}
-
-/* ══════════════════════════════════════════
-   TEMA SERENITY — palheta_de_cores_azul_serenity.jpeg
+   TEMA SERENITY — palheta_de_cores_azul_serenity.jpeg (TEMA PADRÃO)
    #8BADD9 · #96B9D9 · #B6D6F2 · #D8EBF2 · #8EBABF
    Tons suaves, acinzentados, neblina de mar
 ══════════════════════════════════════════ */
-[data-theme="serenity"]{
+:root{
   /* ── Cor da paleta original ── */
   --azul1:   #3d6e9e;   /* escurecido vs #8BADD9 para contraste em texto grande */
   --azul2:   #5a8ab8;   /* médio — usado em textos destaque sobre fundo claro   */
@@ -393,6 +368,7 @@ a{text-decoration:none;color:inherit;}
 [data-theme="shadow-serenity"] .addr-venue{
   color:var(--ink);  /* #E8EEF5 — contraste claro */
 }
+
 
 [data-theme="shadow-serenity"] .addr-text{
   color:var(--verde);
@@ -1006,11 +982,22 @@ body.theme-flip-active .hero::after{
   font-family:'Great Vibes',cursive;
   font-size:clamp(28px,6.5vw,40px);
   color:var(--azul1);display:block;
-  white-space:nowrap;
   text-align:center;
   line-height:1.2;margin:36px auto 0;
 }
+
+.addr-venue a{
+  cursor:pointer;
+  transition:opacity .2s;
+}
+
+.addr-venue a:hover{
+  opacity:.75;
+}
+
 .addr-text{font-size:clamp(13px,3vw,16px);font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--verde);line-height:1.85;display:block;margin-bottom:0;text-align:center;}
+.addr-map-link{display:inline-flex;flex-direction:column;align-items:center;gap:12px;margin-top:28px;color:var(--verde);opacity:.82;transition:opacity .2s ease;text-decoration:none;}
+.addr-map-link:hover{opacity:1;}
 
 /* ═══════════════ VERSÍCULO MID — mesmo layout do verse-top ═══════════════ */
 .verse-mid{padding:52px 0 44px;background:var(--creme);text-align:center;}
@@ -1308,3 +1295,244 @@ body.theme-flip-active .hero::after{
   .noivos-sec img.nimg{max-height:clamp(80vh,95vw,100vh);}
   .local-wrap img{max-height:clamp(80vh,95vw,100vh);}
 }
+
+/* ════════════════════════════════════════════════════════════════════════
+   PIX MODAL — MODAL DE PAGAMENTO PIX COM QR CODE
+════════════════════════════════════════════════════════════════════════ */
+
+.pix-modal-overlay{
+  position:fixed;top:0;left:0;right:0;bottom:0;
+  background:rgba(0,0,0,.65);
+  display:none;
+  z-index:999;
+  animation:fadeIn .3s ease;
+}
+.pix-modal-overlay.active{display:block;}
+
+.pix-modal{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  background:var(--creme);color:var(--ink);
+  border-radius:16px;
+  width:90vw;max-width:420px;
+  max-height:100vh;overflow:hidden;
+  box-shadow:0 20px 60px rgba(0,0,0,.3);
+  z-index:1000;
+  opacity:0;transform:translate(-50%,-50%) scale(.85);
+  transition:opacity .3s ease, transform .3s ease;
+  display:none;
+  flex-direction:column;
+}
+.pix-modal.active{
+  display:block;
+  opacity:1;
+  transform:translate(-50%,-50%) scale(1);
+}
+
+.pix-modal-close{
+  position:absolute;top:16px;right:16px;
+  background:none;border:none;
+  font-size:24px;color:var(--ink);
+  cursor:pointer;padding:0;width:32px;height:32px;
+  display:flex;align-items:center;justify-content:center;
+  transition:color .2s;
+}
+.pix-modal-close:hover{color:var(--azul1);}
+
+.pix-modal-content{
+  padding:24px 18px;
+  text-align:center;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.pix-modal-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:26px;font-weight:600;
+  color:var(--azul1);
+  margin:0;
+  letter-spacing:.5px;
+}
+
+.pix-qrcode-container{
+  margin:6px 0;
+  padding:18px;
+  background:var(--creme2);
+  border-radius:12px;
+  border:3px solid var(--azul3);
+  box-shadow:0 4px 12px rgba(139,173,217,.18);
+  flex-shrink:0;
+}
+
+.pix-qrcode{
+  max-width:100%;
+  width:200px;height:200px;
+  border-radius:8px;
+  display:block;margin:0 auto;
+}
+
+.pix-info{
+  text-align:left;
+  margin:0;
+  padding:12px;
+  background:var(--creme2);
+  border-radius:10px;
+  font-size:13px;
+}
+
+.pix-info-label{
+  font-size:10px;font-weight:600;
+  text-transform:uppercase;
+  color:var(--verde);
+  letter-spacing:0.8px;
+  margin-bottom:3px;
+  margin-top:0;
+  display:block;
+}
+
+.pix-info-gap{margin-top:8px;}
+
+.pix-info-value{
+  font-size:13px;font-weight:500;
+  color:var(--ink);
+  margin:0;
+  word-break:break-word;
+}
+
+.pix-key-box{
+  display:flex;align-items:center;gap:6px;
+  background:var(--creme);
+  border:1px solid var(--sep);
+  border-radius:6px;
+  padding:8px;
+  margin-bottom:2px;
+}
+
+.pix-key{
+  font-size:11px;font-family:'Courier New',monospace;
+  color:var(--ink);
+  flex:1;
+  word-break:break-all;
+}
+
+.pix-copy-btn{
+  background:var(--azul3);color:white;
+  border:none;border-radius:5px;
+  padding:6px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .35s ease, transform .15s ease, box-shadow .35s ease;
+  flex-shrink:0;
+  font-size:12px;
+  position:relative;
+  overflow:visible;
+}
+.pix-copy-btn:hover{background:var(--azul1);transform:scale(1.05);}
+.pix-copy-btn:active{transform:scale(.95);}
+.pix-copy-btn svg{fill:currentColor;width:16px;height:16px;transition:opacity .2s ease;}
+
+/* ── Estado de sucesso da cópia ── */
+@keyframes copyRipple{
+  0%  {transform:scale(1);opacity:.55;}
+  100%{transform:scale(2.8);opacity:0;}
+}
+@keyframes copyCheck{
+  0%  {transform:scale(.5);opacity:0;}
+  60% {transform:scale(1.25);}
+  100%{transform:scale(1);opacity:1;}
+}
+.pix-copy-btn.copied{
+  background:var(--verde2);
+  box-shadow:0 0 0 2px rgba(94,173,242,.40), 0 0 14px 3px rgba(94,173,242,.22);
+  animation:shimmer 1.8s ease-in-out infinite;
+  transform:scale(1.08);
+}
+.pix-copy-btn.copied::before,
+.pix-copy-btn.copied::after{
+  content:'';
+  position:absolute;inset:-1px;
+  border-radius:6px;
+  border:1.5px solid rgba(94,173,242,.60);
+  animation:copyRipple .75s cubic-bezier(.22,1,.36,1) forwards;
+}
+.pix-copy-btn.copied::after{
+  animation-delay:.18s;
+  border-color:rgba(94,173,242,.35);
+}
+.pix-copy-btn.copied .copy-check{
+  animation:copyCheck .35s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+.copy-check{display:block;}
+
+.pix-thanks{
+  padding:12px;
+  background:rgba(94,173,242,.1);
+  border-left:3px solid var(--azul3);
+  border-radius:8px;
+  text-align:center;
+  margin:0;
+}
+
+.pix-thanks p{
+  font-size:12px;
+  line-height:1.4;
+  margin:4px 0;
+  color:var(--ink);
+}
+.pix-thanks p:first-child{margin-top:0;}
+.pix-thanks p:last-child{margin-bottom:0;}
+
+/* TEMA SHADOW SERENITY — PIX */
+[data-theme="shadow-serenity"] .pix-modal{
+  background:var(--creme);
+  border:1px solid rgba(69,86,115,.4);
+}
+
+[data-theme="shadow-serenity"] .pix-modal-title{
+  color:var(--ink);  /* #E8EEF5 */
+}
+
+[data-theme="shadow-serenity"] .pix-qrcode-container{
+  background:var(--creme2);
+  border-color:var(--azul);  /* #7DB3E3 — mais visível */
+  box-shadow:0 4px 12px rgba(125,179,227,.2);
+}
+
+[data-theme="shadow-serenity"] .pix-info{
+  background:var(--creme2);
+}
+
+[data-theme="shadow-serenity"] .pix-info-label{
+  color:var(--azul);  /* #7DB3E3 — contraste elevado */
+}
+
+[data-theme="shadow-serenity"] .pix-info-value{
+  color:var(--ink);  /* #E8EEF5 */
+}
+
+[data-theme="shadow-serenity"] .pix-key-box{
+  background:var(--creme2);
+  border-color:rgba(125,179,227,.4);
+}
+
+[data-theme="shadow-serenity"] .pix-key{
+  color:var(--ink);
+}
+
+[data-theme="shadow-serenity"] .pix-copy-btn{
+  background:var(--azul);  /* #7DB3E3 */
+}
+
+[data-theme="shadow-serenity"] .pix-copy-btn:hover{
+  background:var(--verde2);  /* #8AC0ED — mais brilhante */
+}
+
+[data-theme="shadow-serenity"] .pix-thanks{
+  background:rgba(125,179,227,.15);
+  border-left-color:var(--azul);  /* #7DB3E3 */
+}
+
+[data-theme="shadow-serenity"] .pix-thanks p{
+  color:var(--ink);  /* #E8EEF5 */
+}
+

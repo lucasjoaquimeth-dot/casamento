@@ -1,10 +1,10 @@
 /* ── Sistema de temas ── */
 (function(){
-  var THEMES = ["default", "serenity", "shadow-serenity"];
-  var LABELS = { "default": "Padrão", "serenity": "Serenity", "shadow-serenity": "Shadow Serenity" };
+  var THEMES = ["serenity", "shadow-serenity"];
+  var LABELS = { "serenity": "Serenity", "shadow-serenity": "Shadow Serenity" };
 
   /* aplica tema salvo imediatamente (evita flash) */
-  var saved = localStorage.getItem("convite-theme") || "default";
+  var saved = localStorage.getItem("convite-theme") || "serenity";
   applyTheme(saved, false);
 
   document.addEventListener("DOMContentLoaded", function(){
@@ -15,7 +15,7 @@
     updateLabel(label, saved);
 
     btn.addEventListener("click", function(){
-      var current = document.documentElement.getAttribute("data-theme") || "default";
+      var current = document.documentElement.getAttribute("data-theme") || "serenity";
       var next    = THEMES[(THEMES.indexOf(current) + 1) % THEMES.length];
       applyTheme(next, true);
       updateLabel(label, next);
@@ -30,7 +30,7 @@
       html.style.transition = "background .45s ease";
       document.body && (document.body.style.transition = "background .45s ease, color .45s ease");
     }
-    if(theme === "default"){
+    if(theme === "serenity"){
       html.removeAttribute("data-theme");
     } else {
       html.setAttribute("data-theme", theme);
@@ -502,4 +502,75 @@
   /* re-mede em resize e orientação (mobile, zoom) */
   window.addEventListener("resize", setHeaderH, {passive: true});
   window.addEventListener("orientationchange", setHeaderH, {passive: true});
+})();
+
+/* ── Modal PIX — abertura, fechamento e cópia de chave ── */
+(function(){
+  function openPixModal(){
+    var overlay = document.getElementById("pixModalOverlay");
+    var modal = document.getElementById("pixModal");
+    if(!overlay || !modal) return;
+    
+    overlay.classList.add("active");
+    modal.classList.add("active");
+    document.body.style.overflow = "hidden";
+  }
+  
+  function closePixModal(){
+    var overlay = document.getElementById("pixModalOverlay");
+    var modal = document.getElementById("pixModal");
+    if(!overlay || !modal) return;
+    
+    overlay.classList.remove("active");
+    modal.classList.remove("active");
+    document.body.style.overflow = "";
+  }
+  
+  function copyPixKey(){
+    var keyText = document.getElementById("pixKeyText");
+    if(!keyText) return;
+
+    var text = keyText.textContent || keyText.innerText;
+    if(!text) return;
+
+    var btn = document.getElementById("pixCopyBtn");
+
+    function showCopied(){
+      if(!btn) return;
+      var iconSvg  = btn.querySelector(".copy-icon");
+      var checkSvg = btn.querySelector(".copy-check");
+      if(iconSvg)  iconSvg.style.display  = "none";
+      if(checkSvg) checkSvg.style.display = "";
+      btn.classList.add("copied");
+      setTimeout(function(){
+        btn.classList.remove("copied");
+        if(iconSvg)  iconSvg.style.display  = "";
+        if(checkSvg) checkSvg.style.display = "none";
+      }, 2000);
+    }
+
+    /* copia para clipboard */
+    navigator.clipboard.writeText(text).then(showCopied).catch(function(){
+      /* fallback para navegadores antigos */
+      var textarea = document.createElement("textarea");
+      textarea.value = text;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+      showCopied();
+    });
+  }
+  
+  /* expõe globalmente */
+  window.openPixModal = openPixModal;
+  window.closePixModal = closePixModal;
+  window.copyPixKey = copyPixKey;
+  
+  /* fecha modal com ESC */
+  document.addEventListener("keydown", function(e){
+    if(e.key === "Escape"){
+      closePixModal();
+    }
+  });
 })();
