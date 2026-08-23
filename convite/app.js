@@ -322,45 +322,24 @@
 
 /* ── Scroll reveal ── */
 (function(){
+  var io = new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if(e.isIntersecting){ e.target.classList.add("sv-visible"); io.unobserve(e.target); }
+    });
+  }, {threshold: 0.07});
+  var secs = document.querySelectorAll(".verse-top,.date-sec,.addr-sec,.vbox-sec,.icons-sec,.avisos-sec");
+  secs.forEach(function(el){
+    el.style.opacity   = "0";
+    el.style.transform = "translateY(24px)";
+    el.style.transition = "opacity .75s ease, transform .75s ease";
+    io.observe(el);
+  });
+  document.addEventListener("DOMContentLoaded", function(){
+    document.querySelectorAll(".sv-visible").forEach(function(el){ el.style.opacity = "1"; el.style.transform = "none"; });
+  });
   var style = document.createElement("style");
   style.textContent = ".sv-visible{opacity:1!important;transform:none!important;}";
   document.head.appendChild(style);
-
-  function reveal(el){ el.classList.add("sv-visible"); }
-
-  function isInViewport(el){
-    var r = el.getBoundingClientRect();
-    return r.top < window.innerHeight && r.bottom > 0;
-  }
-
-  var io = new IntersectionObserver(function(es){
-    es.forEach(function(e){
-      if(e.isIntersecting){ reveal(e.target); io.unobserve(e.target); }
-    });
-  }, {threshold: 0.07});
-
-  var secs = document.querySelectorAll(".verse-top,.date-sec,.addr-sec,.vbox-sec,.icons-sec,.avisos-sec");
-
-  secs.forEach(function(el){
-    el.style.transition = "opacity .75s ease, transform .75s ease";
-    // Só esconde e observa elementos fora da viewport inicial
-    if(isInViewport(el)){
-      reveal(el);
-    } else {
-      el.style.opacity   = "0";
-      el.style.transform = "translateY(24px)";
-      io.observe(el);
-    }
-  });
-
-  // Fallback: após renderização completa, revela qualquer elemento ainda visível mas não revelado
-  window.addEventListener("load", function(){
-    requestAnimationFrame(function(){
-      secs.forEach(function(el){
-        if(isInViewport(el)){ reveal(el); }
-      });
-    });
-  });
 })();
 
 /* ── Flores: scroll physics + migração para header + troca por tema ── */
