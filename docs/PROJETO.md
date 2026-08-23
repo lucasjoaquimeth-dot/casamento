@@ -84,8 +84,8 @@ flores escuta para animar a substituição.
 | `--azul2` | `#5a8ab8` | médio |
 | `--azul3` | `#8BADD9` | claro — bordas, halos, separadores |
 | `--azul4` | `#B6D6F2` | pálido — sombras, shimmer |
-| `--verde` | `#4a7aab` | labels uppercase pequenas (alias legado, **é azul**) |
-| `--verde2` | `#3d6e9e` | `<strong>`, destaques |
+| `--label` | `#4a7aab` | labels uppercase pequenas (`.vref`, `.cd-lbl`, `.addr-text`) |
+| `--destaque` | `#3d6e9e` | `<strong>`, destaques |
 | `--creme` / `--creme2` | `#f0f5f8` / `#e4eff4` | fundos |
 | `--ink` / `--ink2` | `#1a2b38` / `#2e4a5e` | textos |
 
@@ -94,15 +94,15 @@ flores escuta para animar a substituição.
 | Variável | Hex |
 |---|---|
 | `--azul1` … `--azul4` | `#1C2333` · `#2E3A52` · `#455673` · `#2F3D51` |
-| `--verde` / `--verde2` / `--azul` | `#7DB3E3` · `#8AC0ED` · `#7DB3E3` |
+| `--label` / `--destaque` / `--azul` | `#7DB3E3` · `#8AC0ED` · `#7DB3E3` |
 | `--creme` / `--creme2` | `#0F1419` / `#1A2230` |
 | `--ink` / `--ink2` | `#E8EEF5` / `#B8C8DC` |
 
 Contraste dos textos principais validado em WCAG 2.1 AA/AAA.
 
-> ⚠️ `--verde` e `--verde2` são **nomes legados** de uma paleta abandonada.
-> Hoje contêm azuis. Renomear exigiria tocar em ~120 seletores; a decisão foi
-> mantê-los. **Não** colocar verde real neles.
+> ℹ️ Os nomes das variáveis são **semânticos** (`--label`, `--destaque`, `--ink`,
+> `--muted`, `--sep`), não descrevem cor. A paleta é inteiramente azul: não
+> introduzir verde. Toda cor precisa ser definida nos **dois** temas.
 
 ## 5. Tipografia (Google Fonts)
 
@@ -186,14 +186,18 @@ o selo e o texto escalam com o tamanho do card, não da viewport.
 - `object-fit: cover` + altura fixa nas fotos — corta as pessoas
 - `max-height` nas fotos do mobile — removido de propósito (commit `03232e2`)
 - Caminho absoluto começando com `/` — quebra no GitHub Pages
-- Verde real em `--verde` / `--verde2`
+- Introduzir verde na paleta — o projeto é inteiramente azul
 - Qualquer CDN de JavaScript
 
 ## 10. Pendências
 
 - [ ] Testar em iOS Safari e Android Chrome reais
-- [ ] Otimizar `assets/photos/monograma.jpg` (5,1 MB → alvo < 500 KB)
-- [ ] Otimizar `assets/carta/carta.png` (2,2 MB — avaliar WebP)
 - [ ] Mapear `beatPattern` do player para a música inteira (hoje cobre ~2,2s)
 - [ ] Avaliar `prefers-reduced-motion` nas animações
+
+### Decisões fechadas
+
+- **`assets/photos/monograma.jpg` (5,1 MB) fica sem compressão** — decisão do
+  casal: é a foto deles e a fidelidade vale o peso. Não recomprimir.
+  `assets/carta/carta.png` (2,2 MB) segue o mesmo critério.
 

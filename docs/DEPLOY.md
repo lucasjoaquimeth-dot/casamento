@@ -47,7 +47,7 @@ node serve.js
 - [ ] Countdown atualiza a cada segundo
 - [ ] Player toca o áudio e as ondas reagem
 - [ ] Monograma cresce ao clicar e volta sozinho após ~4s
-- [ ] Modal PIX abre, copia a chave (✓ verde) e fecha com ✕, overlay e ESC
+- [ ] Modal PIX abre, copia a chave (✓ azul com shimmer) e fecha com ✕, overlay e ESC
 - [ ] Flores giram no scroll e migram para o header
 
 ### Responsividade (DevTools)

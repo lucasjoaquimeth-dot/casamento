@@ -128,7 +128,7 @@
   function pad(n){ return String(n).padStart(2, "0"); }
   function tick(){
     var now = new Date(), d = t - now;
-    if(d <= 0){ el.innerHTML = "<span style='color:var(--verde);font-size:16px;letter-spacing:.1em'>Chegou o grande dia!</span>"; return; }
+    if(d <= 0){ el.innerHTML = "<span style='color:var(--label);font-size:16px;letter-spacing:.1em'>Chegou o grande dia!</span>"; return; }
     var dy = Math.floor(d / 86400000),
         h  = Math.floor((d % 86400000) / 3600000),
         m  = Math.floor((d % 3600000)  / 60000),
@@ -257,7 +257,7 @@
       "position:absolute",
       "inset:-1px",
       "border-radius:50%",
-      "border:1px solid var(--verde)",
+      "border:1px solid var(--label)",
       "pointer-events:none",
       "transform:scale(1)",
       "opacity:" + (0.18 + energy * 0.45),

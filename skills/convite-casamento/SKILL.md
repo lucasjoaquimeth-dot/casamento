@@ -50,14 +50,15 @@ Dois temas, alternados pelo botão do header, persistidos em
 --azul2: #5a8ab8                  --azul2: #2E3A52
 --azul3: #8BADD9                  --azul3: #455673
 --azul4: #B6D6F2                  --azul4: #2F3D51
---verde: #4a7aab                  --verde: #7DB3E3
+--label:    #4a7aab               --label:    #7DB3E3
+--destaque: #3d6e9e               --destaque: #8AC0ED
 --creme: #f0f5f8                  --creme: #0F1419
 --ink:   #1a2b38                  --ink:   #E8EEF5
 ```
 
-⚠️ `--verde` / `--verde2` são **nomes legados** e contêm **azuis**. Nunca
-colocar verde real neles. Toda alteração de cor precisa ser feita nos **dois**
-temas.
+ℹ️ Os nomes são **semânticos**, não descrevem cor (`--label` = labels uppercase
+pequenas, `--destaque` = `<strong>`). A paleta é inteiramente azul: nunca
+introduzir verde. Toda alteração de cor precisa ser feita nos **dois** temas.
 
 ## Tipografia
 

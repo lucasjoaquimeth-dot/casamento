@@ -4,6 +4,21 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 
 ---
 
+## [1.5.0] — 2026-08-23
+
+### Alterado
+- **Variáveis de cor renomeadas para nomes semânticos**: `--verde` → `--label`
+  e `--verde2` → `--destaque`. Os nomes antigos eram herança de uma paleta
+  abandonada e continham azuis (`#4a7aab` / `#3d6e9e` no Serenity,
+  `#7DB3E3` / `#8AC0ED` no Shadow Serenity), o que induzia a erro qualquer um
+  que fosse "consertar" a cor. Nenhum valor de cor mudou — só os nomes.
+  32 usos atualizados em `convite/style.css` (30) e `convite/app.js` (2),
+  além de `docs/PROJETO.md` e `skills/convite-casamento/SKILL.md`.
+  Validado em Chrome headless: as 19 variáveis de cor continuam declaradas nos
+  **dois** temas e `--label` / `--destaque` resolvem sem valor vazio.
+
+---
+
 ## [1.4.0] — 2026-08-23
 
 ### Adicionado
