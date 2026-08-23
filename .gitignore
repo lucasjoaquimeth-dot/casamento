@@ -1,10 +1,3 @@
-﻿# Base64 cache — arquivos grandes gerados automaticamente
-.bob/*.txt
-.bob/tmp_*
-
-# Arquivo de tarefa exportado do Bob
-bob-task-*.json
-
 # Sistema operacional
 .DS_Store
 Thumbs.db
@@ -12,14 +5,10 @@ desktop.ini
 
 # Editor
 .vscode/
+.idea/
 *.code-workspace
 
-# Python
-__pycache__/
-*.pyc
-*.pyo
-
 # Temporários
-0
 *.tmp
 *.bak
+*.log

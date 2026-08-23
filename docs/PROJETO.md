@@ -1,303 +1,199 @@
-# Convite de Casamento — Mayane & Lucas
-## Guia Completo do Projeto · Atualizado
+# Convite de Casamento — Mayane &amp; Lucas
 
-> Use este arquivo para retomar o trabalho em qualquer nova conversa. Documenta todo o estado atual, decisões tomadas, o que funciona e o que não funciona.
+Referência técnica do projeto. **Leia este arquivo antes de qualquer edição.**
 
 ---
 
-## 1. Dados do Casamento
+## 1. Dados do casamento
 
 | Campo | Valor |
-|-------|-------|
-| **Noivos** | Mayane & Lucas |
-| **Data** | 18 de Outubro de 2026 |
-| **Dia** | Sábado |
+|---|---|
+| **Noivos** | Mayane &amp; Lucas |
+| **Data** | 18 de Outubro de 2026 — **Domingo** |
 | **Horário** | 13h30 |
-| **Cerimônia** | R. Adelino Strasi, 04 — Jardim Brasil, Várzea Paulista · SP |
-| **Recepção** | R. Adelino Strasi, 04 — Jardim Brasil, Várzea Paulista · SP |
+| **Cerimônia e recepção** | Vale Verde — Espaço Acqua |
+| **Endereço** | R. Adelino Strasi, 04 — Jardim Brasil, Várzea Paulista · SP |
 | **Dress code** | Esporte fino |
 | **RSVP até** | 18/09/2026 |
+| **Contagem regressiva** | alvo `2026-10-18T13:30:00` (`convite/app.js`) |
 
----
+## 2. Links externos usados
 
-## 2. Estrutura de Pastas
+| Destino | URL |
+|---|---|
+| Mapa | `https://maps.app.goo.gl/egAJYvL6jMXkU9BH8` |
+| Lista de presentes | `https://sites.icasei.com.br/lucasmayane/pages/38500020` |
+| Cotas da lua de mel | `https://sites.icasei.com.br/lucasmayane/pages/38500022` |
+| Confirmar presença | `https://sites.icasei.com.br/lucasmayane/pages/38500021` |
+| PIX | modal interno — chave aleatória `c11e4716-c852-40b4-935d-737d80cd83d7` |
+
+## 3. Arquitetura
+
+Site estático, **sem build e sem framework**. Só três arquivos de código:
 
 ```
-Convite/
-├── v1_aquarela/index.html   ← PRINCIPAL ✅ — versão mais evoluída (paleta azul, todas as interações)
-├── v2_luxo/index.html       ← Variante dourada (dark + gold, mesma estrutura)
-├── v3_botanico/index.html   ← Variante verde botânico
-├── v4_noturno/index.html    ← Variante azul noturno (dark, estrelas)
-│
-├── assets/
-│   ├── local.jpeg           ← Foto do local (lago/deque/flores) — usada como <img> full-width
-│   ├── noivos.jpeg          ← Foto do casal (fundo rosa/pêssego bokeh) — monograma hero
-│   ├── flor_sem_fundo.png   ← Flores PNG com alpha — usar para TUDO (cantos, header, laterais)
-│   ├── flor_lateral_direita.png  ← ⚠️ TEM FUNDO BRANCO — NÃO usar diretamente
-│   ├── flor.png             ← Flores alternativas
-│   └── palheta_cores.jpeg   ← Paleta Adobe real: #0644BF #2975D9 #5EADF2 #8DC3F2 #F2F2F2
-│
-├── .bob/                    ← Cache de base64 (gerado automaticamente — não versionar)
-│   ├── local_b64.txt        ← base64 de local.jpeg
-│   ├── noivos_b64.txt       ← base64 de noivos.jpeg
-│   ├── flor_sem_fundo_b64.txt ← base64 de flor_sem_fundo.png
-│   ├── flor_lateral_b64.txt ← base64 de flor_lateral_direita.png
-│   ├── fundo_b64.txt        ← base64 de fundo.jpg
-│   ├── flor_b64.txt         ← base64 de flor.png
-│   ├── tmp_local.txt        ← alias (mesmo que local_b64.txt)
-│   ├── tmp_noivos.txt       ← alias (mesmo que noivos_b64.txt)
-│   ├── tmp_flortop.txt      ← alias
-│   ├── tmp_florlat.txt      ← alias
-│   └── template_clean.html  ← Template v1 sem imagens (placeholders __LOCAL__ etc.)
-│
-├── tools/                   ← Scripts auxiliares de build (build_sites_v2.ps1 é o principal)
-├── PROJETO.md               ← Este arquivo
-└── .gitignore
+index.html          → <meta refresh> para ./carta/
+carta/index.html    → capa autocontida (CSS inline, container queries)
+convite/
+├── index.html      → marcação
+├── style.css       → estilos + temas
+└── app.js          → comportamento (8 IIFEs independentes)
 ```
 
----
+Únicas dependências externas: **Google Fonts**. Nada de CDN de JavaScript —
+o convite precisa funcionar em conexões ruins.
 
-## 3. Paleta Real (extraída de `assets/palheta_cores.jpeg`)
+### Fluxo de navegação
 
-Paleta Adobe com 5 cores base — **apenas azuis, sem verdes**.
+```
+/  →  /carta/  →  (clique no selo)  →  /convite/
+```
 
-| Variável CSS | Hex | Uso |
+### Assets referenciados (todos com caminho relativo `../assets/...`)
+
+| Arquivo | Onde é usado |
+|---|---|
+| `assets/carta/carta.png` | `carta/index.html` — arte do envelope |
+| `assets/flowers/flor_serenity.png` | flores do hero, header, endereço e noivos |
+| `assets/photos/monograma.jpg` | fundo do monograma oval (setado em `app.js`) |
+| `assets/photos/noivos.jpeg` | seção final `.noivos-sec` |
+| `assets/venue/local.jpeg` | foto do espaço, dentro do hero |
+| `assets/pix/qrcode.jpeg` | modal PIX |
+| `assets/audio/anjos_cantam.m4a` | player de música |
+| `assets/reference/palheta_serenity.jpeg` | apenas referência de cor — **não** carregado pelo site |
+
+> Imagens são arquivos externos, **não base64 inline**. As duas fotos grandes
+> ficaram embutidas em base64 no passado (417 KB de HTML); hoje são `<img>` com
+> `loading="lazy"` (11 KB de HTML). Não reintroduzir base64.
+
+## 4. Temas
+
+Dois temas, alternados pelo botão do header e persistidos em
+`localStorage["convite-theme"]`. `serenity` é o padrão e vive em `:root`
+(sem atributo no `<html>`); `shadow-serenity` é aplicado via
+`<html data-theme="shadow-serenity">`.
+
+Ao trocar, `app.js` dispara o evento `convite:theme-change`, que o módulo das
+flores escuta para animar a substituição.
+
+### Serenity (claro — padrão)
+
+| Variável | Hex | Uso |
 |---|---|---|
-| `--azul1` | `#0644BF` | Azul escuro — nomes no hero, destaques fortes |
-| `--azul2` / `--verde` | `#2975D9` | Azul médio — `&`, ícones, separadores, links |
-| `--azul3` / `--azul` | `#5EADF2` | Azul claro — bordas, halos, ripples |
-| `--azul4` | `#8DC3F2` | Azul pálido — sombras, shimmer suave |
-| `--creme` | `#f4f7fc` | Fundo principal — off-white frio |
-| `--creme2` | `#eaeff8` | Fundo seções alternadas |
-| `--ink` | `#12213d` | Texto principal — azul muito escuro |
-| `--ink2` | `#3a5080` | Texto secundário |
-| `--muted` | `rgba(41,117,217,0.42)` | Labels, hints |
-| `--sep` | `rgba(94,173,242,0.28)` | Linhas divisórias |
+| `--azul1` | `#3d6e9e` | escuro — títulos, destaques |
+| `--azul2` | `#5a8ab8` | médio |
+| `--azul3` | `#8BADD9` | claro — bordas, halos, separadores |
+| `--azul4` | `#B6D6F2` | pálido — sombras, shimmer |
+| `--verde` | `#4a7aab` | labels uppercase pequenas (alias legado, **é azul**) |
+| `--verde2` | `#3d6e9e` | `<strong>`, destaques |
+| `--creme` / `--creme2` | `#f0f5f8` / `#e4eff4` | fundos |
+| `--ink` / `--ink2` | `#1a2b38` / `#2e4a5e` | textos |
 
-> ⚠️ A paleta anterior tinha verdes (`#4a7c6f`, `#16301f`, `#eef2ea` etc.) — **foram todos removidos**. Não reintroduzir jamais.
+### Shadow Serenity (escuro)
 
----
+| Variável | Hex |
+|---|---|
+| `--azul1` … `--azul4` | `#1C2333` · `#2E3A52` · `#455673` · `#2F3D51` |
+| `--verde` / `--verde2` / `--azul` | `#7DB3E3` · `#8AC0ED` · `#7DB3E3` |
+| `--creme` / `--creme2` | `#0F1419` / `#1A2230` |
+| `--ink` / `--ink2` | `#E8EEF5` / `#B8C8DC` |
 
-## 4. Tipografia
+Contraste dos textos principais validado em WCAG 2.1 AA/AAA.
+
+> ⚠️ `--verde` e `--verde2` são **nomes legados** de uma paleta abandonada.
+> Hoje contêm azuis. Renomear exigiria tocar em ~120 seletores; a decisão foi
+> mantê-los. **Não** colocar verde real neles.
+
+## 5. Tipografia (Google Fonts)
 
 | Uso | Fonte | Tamanho |
 |---|---|---|
-| Nomes (Mayane, Lucas) | `Great Vibes` | `clamp(82px,19vw,136px)` |
-| `&` entre os nomes | `Cormorant Garamond italic 300` | `clamp(52px,11vw,78px)` |
-| Títulos de seção | `Great Vibes` | `clamp(52px,13vw,68px)` |
-| Versículos, citações | `Cormorant Garamond italic` | `clamp(17px,4vw,22px)` |
-| Corpo, labels | `Raleway` | `clamp(10px,3vw,16px)` |
-| Número "18" da data | `Cormorant Garamond 300` | `clamp(108px,23vw,160px)` |
+| Nomes dos noivos | `Great Vibes` | `clamp(82px,19vw,136px)` |
+| Títulos de seção | `Great Vibes` | `clamp(40px,13vw,68px)` |
+| `&`, versículos, data, countdown | `Cormorant Garamond` | variável |
+| Corpo, labels, botões | `Raleway` | variável |
 
-> O `&` usa **Cormorant Garamond** (não Great Vibes) — o glifo `&` do Great Vibes tem flourishes muito longos que quebram o layout.
+## 6. Seções de `convite/index.html`
 
----
+Na ordem, separadas pelo ornamento `<div class="orn">`:
 
-## 5. Estrutura do HTML — Ordem das Seções (v1_aquarela)
+1. `.site-header` — fixo: "M & L", data, flores migratórias, botão de tema
+2. `.hero` — flores nos cantos, monograma, nomes, `.player-sec`, foto do local
+3. `.verse-top` — Eclesiastes 4:9–10
+4. `.date-sec` — data grande + countdown ao vivo
+5. `.addr-sec` — endereço, nome do espaço e link do mapa
+6. `.verse-mid` — Provérbios 18:22
+7. `.icons-sec` — 4 ícones SVG: presentes, PIX, lua de mel, RSVP
+8. `.avisos-sec` — RSVP, dress code, pontualidade
+9. `.noivos-sec` — foto do casal com gradientes e flores nos cantos
+10. `.pix-modal` — modal do PIX (fora do fluxo, no fim do `<body>`)
 
-```
-0. HEADER FIXO (.site-header)
-   ├── "Mayane & Lucas" em Great Vibes
-   ├── separador vertical .site-header-sep
-   ├── "18 · OUT · 2026" em Raleway
-   ├── .hflor-l (flor miniatura esquerda — desliza ao rolar)
-   └── .hflor-r (flor miniatura direita — desliza ao rolar)
+A altura real do header é medida em runtime e exposta como `--header-h`,
+consumida por `body{padding-top}` — por isso o conteúdo nunca fica cortado.
 
-1. HERO (.hero)
-   ├── .flor-tl / .flor-tr — flores cantos superior (PNG sem fundo, top:36px)
-   ├── .hero-ring — anel decorativo pulsante (ringPulse)
-   ├── .monogram-wrap — oval com foto dos noivos
-   │   ├── .monogram-ripple — anel de onda CSS (expande em todas direções)
-   │   └── .monogram > #mBg — <img> da foto (src copiado por JS de .nimg)
-   └── #heroCtx (.hero-context) — recua com opacity/translateY ao interagir
-       ├── .hero-blessing (versículo acima dos nomes)
-       ├── .hero-name "Mayane"
-       ├── .hero-amp "&"
-       ├── .hero-name "Lucas"
-       ├── .hero-tagline
-       └── .scroll-hint (seta animada)
+## 7. Módulos de `convite/app.js`
 
-2. FOTO DO LOCAL (.local-wrap) — <img> inteira, sem crop, sem overflow:hidden
-3. VERSÍCULO TOP — Eclesiastes 4:9–12
-4. ORNAMENT ROW ✦ (.ornament-row)
-5. PLAYER VISUAL — visual apenas, sem áudio real
-6. DATA (.date-section) — "18" gigante + countdown ao vivo
-7. ORNAMENT ROW
-8. ENDEREÇOS — cerimônia + recepção + flores laterais prata
-9. VERSÍCULO BOX — Provérbios 18:22
-10. ORNAMENT ROW
-11. ÍCONES 2×2 — SVGs inline 48×48
-12. ORNAMENT ROW
-13. AVISOS + "Esperamos por você!"
-14. SEÇÃO NOIVOS (.noivos-section) — foto .nimg full-width + caption + flores cantos inferiores
-15. FOOTER
-```
+Cada bloco é uma IIFE independente que verifica a existência dos elementos
+antes de agir (falha silenciosa se o HTML mudar).
 
----
+| Módulo | Responsabilidade |
+|---|---|
+| **Temas** | aplica o tema salvo antes do paint (sem flash), rotaciona no clique, dispara `convite:theme-change` |
+| **Monograma** | clique → +6% de escala (máx `2.2×`), micro-bounce, corações flutuantes, contexto recua; reset após 4s |
+| **Countdown** | `setInterval` de 1s até `2026-10-18T13:30:00`; ao chegar exibe "Chegou o grande dia!" |
+| **Player** | play/pause do `<audio>`, ondas concêntricas dirigidas por `beatPattern` (tempos mapeados na mão) |
+| **Scroll reveal** | `IntersectionObserver` (`threshold 0.07`) → adiciona `.sv-visible` |
+| **Flores** | física de scroll com `requestAnimationFrame` (`SENS .018`, `MAX 12°`, `DAMP .82`, `SMOOTH .14`), migração hero → header via observer, animação na troca de tema |
+| **Header height** | mede o header e escreve `--header-h`; re-mede em `fonts.ready`, `resize` e `orientationchange` |
+| **Modal PIX** | abre/fecha (clique, ✕, ESC), copia a chave com `navigator.clipboard` + fallback `execCommand` |
 
-## 6. Interações JavaScript (v1_aquarela)
+Funções expostas no `window` (chamadas por `onclick` no HTML):
+`playerToggle`, `openPixModal`, `closePixModal`, `copyPixKey`.
 
-### 6.1 Monograma — sistema de likes / crescimento
-- **Fonte da foto**: JS copia `src` do `.nimg` para `#mBg` na inicialização — sem duplicar base64
-- **Click acumula escala**: `+6%` por clique, máximo `2.2×`
-- **`transform-origin: top center`** → monograma cresce só para baixo
-- **`marginBottom` dinâmico**: `24px + MONO_H×(escala-1)` — empurra conteúdo abaixo sem sobreposição
-- **`.hero-context` recua**: `opacity` e `translateY` proporcionais à escala, mínimo `opacity:0.25`
-- **Micro-bounce**: escala sobe `+0.12` antes de assentar no valor final (sensação física)
-- **Shimmer acelera**: `animationDuration` decresce proporcionalmente com os cliques
-- **Corações**: SVG azul (`--azul2`) flutua da borda inferior do oval, posição X aleatória, animação `heartFloat`
-- **Reset automático**: 4s sem clicar → tudo volta com `2.0s cubic-bezier(.22,1,.36,1)`, ctx com delay `0.3s`
+## 8. Responsividade
 
-### 6.2 Ripple (ondas do monograma)
-- **3 anéis**: `::before`, `::after`, `.monogram-ripple` — todos com `inset:0`
-- **`transform-origin: center center`** nos anéis → expande em todas as direções (pedra no lago)
-- **`transform-origin: top center`** no `.monogram` → cresce só para baixo
-- Anéis ativam somente no `:hover`, com delays `0s / 0.32s / 0.64s`
+Breakpoints em `convite/style.css`:
 
-### 6.3 Flores — scroll physics
-- `requestAnimationFrame` loop contínuo: `velocity`, `DAMP=0.82`, `SMOOTH=0.14`
-- Scroll rápido = rotação maior (máx `±12°`), scroll lento = pequena
-- Flor esquerda e direita giram em sentidos opostos para naturalidade
-- Para quando `Math.abs(velocity) < 0.05` — sem loop eterno
-- Scroll listener com `{passive:true}` — performance sem jank
+`≤360px` · `≤479px` · `480–599px` · `600–767px` · `≤767px` · `768px+` ·
+`768–1023px` · `1024px+` · `1920px+`
 
-### 6.4 Flores — migração para o header
-- `IntersectionObserver` na `.flor-tl` detecta saída da viewport superior
-- Ao sair: `hdr.classList.add('has-flores')` → flores miniatura deslizam para dentro via CSS transition
-- `src` das miniaturas copiado por JS das originais — zero duplicação de base64
-- Mesma rotação de scroll aplicada nas 4 flores (2 hero + 2 header) simultaneamente
+O header reserva `padding-right` para o botão de tema, que tem `flex-shrink:0`
+— assim ele nunca sobrepõe o texto. Abaixo de 600px o rótulo "Tema" é ocultado
+e fica só o ícone.
 
-### 6.5 Countdown ao vivo
-- Target: `new Date("2026-10-18T13:30:00")`
-- Atualiza a cada segundo via `setInterval`
-- Mostra dias / horas / minutos / segundos em `.cd-val` / `.cd-lbl`
+`carta/index.html` usa **container queries** (`cqw`) em vez de media queries:
+o selo e o texto escalam com o tamanho do card, não da viewport.
 
----
+## 9. Regras críticas
 
-## 7. Efeitos CSS Notáveis
+### ✅ Sempre
 
-### Header glass
-```css
-background: rgba(244,247,252,.28);
-backdrop-filter: blur(18px) saturate(1.6);
-box-shadow: 0 1px 0 0 rgba(255,255,255,.55) inset;  /* brilho interno topo */
-border-bottom: 1px solid rgba(94,173,242,.22);
-```
+- Fotos como `<img>` com `height:auto` — nunca `background-image` com `cover`
+- `animation: … forwards` nas flores (nunca `both`)
+- `transform-origin: center center` nos ripple rings
+- `transform-origin: top center` no monograma (cresce para baixo)
+- `{passive:true}` nos listeners de `scroll` / `resize`
+- Parar o `requestAnimationFrame` quando `Math.abs(v) < 0.05`
+- Caminhos relativos (`../assets/…`) — o site roda em subpasta no GitHub Pages
+- `loading="lazy"` nas fotos grandes
 
-### Flores laterais — prata azulada (seção endereços)
-```css
-filter:
-  sepia(1)
-  hue-rotate(185deg)   /* gira para azul-aço */
-  saturate(.55)         /* dessatura → prata, não azul saturado */
-  brightness(1.18)
-  contrast(.88)
-  drop-shadow(0 2px 8px rgba(141,195,242,.35))
-  drop-shadow(0 0 18px rgba(255,255,255,.40));
-```
-> ⚠️ Usar sempre `flor_sem_fundo.png` nas laterais — `flor_lateral_direita.png` tem fundo branco opaco e destrói o efeito.
+### ❌ Nunca
 
-### Flores cantos — hover brisa
-```css
-.flor-tl:hover { animation: florBreeze 2.5s ease-in-out infinite; }
-/* florBreeze: rotate(±1.5deg) + scale(1.02) */
-/* animation: ... forwards (não both) — evita piscar ao sair do hover */
-/* opacity:.95 no seletor base — garante que nunca some */
-```
+- Reintroduzir imagens em base64 no HTML
+- `background-attachment: fixed` em imagem — distorce e trava no iOS
+- `backdrop-filter` no monograma — desfoca o casal
+- `overflow:hidden` no `.hero` — corta o `&` entre os nomes
+- `object-fit: cover` + altura fixa nas fotos — corta as pessoas
+- `max-height` nas fotos do mobile — removido de propósito (commit `03232e2`)
+- Caminho absoluto começando com `/` — quebra no GitHub Pages
+- Verde real em `--verde` / `--verde2`
+- Qualquer CDN de JavaScript
 
-### Nomes — hover flutuação
-```css
-.hero-name:hover {
-  color: #2975D9;
-  transform: translateY(-4px);
-  text-shadow: 0 8px 24px rgba(41,117,217,.22), 0 2px 8px rgba(94,173,242,.18);
-}
-```
+## 10. Pendências
 
-### Monograma — borda shimmer idle
-```css
-@keyframes shimmer {
-  0%,100% { box-shadow: 0 0 0 2px rgba(94,173,242,.40), 0 0 12px 2px rgba(94,173,242,.15); }
-  50%     { box-shadow: 0 0 0 2px rgba(41,117,217,.70), 0 0 22px 6px rgba(94,173,242,.30); }
-}
-```
+- [ ] Testar em iOS Safari e Android Chrome reais
+- [ ] Otimizar `assets/photos/monograma.jpg` (5,1 MB → alvo < 500 KB)
+- [ ] Otimizar `assets/carta/carta.png` (2,2 MB — avaliar WebP)
+- [ ] Mapear `beatPattern` do player para a música inteira (hoje cobre ~2,2s)
+- [ ] Avaliar `prefers-reduced-motion` nas animações
 
----
-
-## 8. Keyframes CSS disponíveis
-
-```
-fadeDown      — de cima → posição (header entry, .3s delay)
-fadeUp        — de baixo → posição (seções, nomes)
-fadeIn        — aparecer (flores, textos)
-scaleIn       — 0.88→1.0 (monograma entry)
-arrowBob      — bounce vertical (scroll hint)
-ringPulse     — pulso radial (anel hero)
-shimmer       — box-shadow pulsante (borda monograma idle)
-florBreeze    — brisa hover flores esquerda
-florBreezeR   — brisa hover flores direita (scaleX(-1))
-ripple1/2/3   — ondas concêntricas (monograma hover)
-heartFloat    — corações subindo (clique monograma)
-```
-
----
-
-## 9. Regras Críticas — O que FUNCIONA e o que NÃO FUNCIONA
-
-### ✅ SEMPRE FAZER
-1. Fotos como `<img height:auto>` — nunca `background-image` fixo com `cover`
-2. `animation: ... forwards` nas flores (não `both`) — evita piscar no hover
-3. `transform-origin: center center` nos ripple rings — onda em todas as direções
-4. `transform-origin: top center` no monograma — cresce para baixo
-5. Copiar `src` de imagem por JS para reaproveitar base64 sem duplicar
-6. `{passive:true}` no scroll listener — performance
-7. Parar `requestAnimationFrame` quando `Math.abs(v) < 0.05` — sem loop eterno
-8. Usar `flor_sem_fundo.png` para TODAS as flores (cantos, header, laterais)
-9. Paleta: apenas `#0644BF #2975D9 #5EADF2 #8DC3F2` — nunca verdes
-
-### ❌ NUNCA FAZER
-1. `background-attachment: fixed` + imagem base64 → distorce a aquarela
-2. `filter: saturate(0)` nas flores laterais → manchas cinzas sem detalhe
-3. `animation: ... both` nas flores → pisca ao sair do hover
-4. `transform-origin: top center` nos ripple rings → onda nasce só do topo
-5. `backdrop-filter` no monograma → desfoca a foto, casal fica irreconhecível
-6. `overflow:hidden` no `.hero` → corta o `&` entre os nomes
-7. GSAP via CDN externo → quebra offline
-8. `object-fit: cover` com altura fixa nas fotos → corta pessoas
-9. Qualquer cor `rgba(74,124,111,...)` ou `rgba(22,48,31,...)` — são verdes da paleta antiga
-
----
-
-## 10. Variantes — Diferenças por versão
-
-| | v1_aquarela | v2_luxo | v3_botanico | v4_noturno |
-|---|---|---|---|---|
-| **Fundo** | `#f4f7fc` creme | `#0f1620` dark | `#eef2ea` verde claro | `#080d1a` dark azul |
-| **Acento** | Azuis `#0644BF` | Ouro `#f0d79b` | Verdes `#1f5730` | Azul noite `#bfd6ff` |
-| **Fonte nome** | Great Vibes | Italiana | Parisienne | Pinyon Script |
-| **Fonte corpo** | Raleway | Jost | Lato | Montserrat |
-| **Status** | ✅ Principal, todas interações | Estrutura igual ao v1 | Estrutura igual ao v1 | Estrutura igual ao v1 |
-
----
-
-## 11. Pendências / Próximos Passos
-
-- [ ] Adicionar música real ao player (ou remover completamente)
-- [ ] Substituir `href="#"` dos ícones pelos URLs reais (Google Maps, form RSVP, WhatsApp)
-- [ ] Hospedar online (GitHub Pages, Netlify ou Vercel — arquivo estático)
-- [ ] Testar no mobile (iOS Safari + Android Chrome)
-- [ ] Corrigir flores laterais v2/v3/v4 se necessário (usar `flor_sem_fundo.png`)
-- [ ] Propagar refinamentos do v1 para v2/v3/v4 se aprovado
-
----
-
-## 12. Contexto para Nova Conversa
-
-> "Convite digital HTML para **Mayane & Lucas** — 18/10/2026, 13h30, R. Adelino Strasi 04, Várzea Paulista SP.
-> Versão principal: `v1_aquarela/index.html`. Paleta: `#0644BF #2975D9 #5EADF2 #8DC3F2` (azuis puros, sem verdes).
-> Fundo `#f4f7fc`. Interações: monograma com likes/crescimento, ripple rings, flores com scroll physics, header glass com flores migratórias, countdown ao vivo.
-> **Leia `PROJETO.md` completo antes de qualquer edição.**"
-
----
-
-*Última atualização: paleta corrigida para azuis, estrutura v1–v4 documentada, todas as interações JS descritas*

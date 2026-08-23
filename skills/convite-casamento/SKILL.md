@@ -1,89 +1,120 @@
 ---
 name: convite-casamento
 description: >
-  Contexto completo do projeto de convite digital de casamento Mayane & Lucas.
-  Ative quando o usuário pedir para continuar, editar ou criar algo no convite.
+  Contexto do site de convite de casamento de Mayane & Lucas (18/10/2026):
+  HTML/CSS/JS estático, sem build, dois temas, hospedado no GitHub Pages.
+  Ative quando o usuário pedir para continuar, editar, revisar ou depurar
+  qualquer coisa deste projeto — carta, convite, estilos, temas, assets ou docs.
 ---
 
-# Convite Digital — Mayane & Lucas
+# Convite Digital — Mayane &amp; Lucas
 
-## Identidade do Projeto
+## Identidade
 
-Convite de casamento 100% HTML, self-contained (imagens como base64 inline), sem dependências CDN exceto Google Fonts.
+Site estático de convite de casamento. **Sem build, sem framework, sem CDN de
+JavaScript.** Única dependência externa: Google Fonts.
 
-- **Noivos**: Mayane & Lucas
-- **Data**: 18 de Outubro de 2026, Sábado, 13h30
-- **Local**: R. Adelino Strasi, 04 — Jardim Brasil, Várzea Paulista · SP
-- **Dress code**: Esporte fino | **RSVP até**: 18/09/2026
+- **Noivos**: Mayane &amp; Lucas
+- **Data**: 18 de Outubro de 2026, **domingo**, 13h30
+- **Local**: Vale Verde — Espaço Acqua · R. Adelino Strasi, 04 — Jardim Brasil, Várzea Paulista · SP
+- **Dress code**: Esporte fino · **RSVP até**: 18/09/2026
+- **Hospedagem**: GitHub Pages, em subpasta → **só caminhos relativos**
 
-## Arquivo Principal
-
-`v1_aquarela/index.html` — versão mais evoluída. Leia `PROJETO.md` para o estado completo.
-
-## Paleta — APENAS AZUIS
+## Estrutura
 
 ```
---azul1: #0644BF   (escuro — nomes, destaques)
---azul2: #2975D9   (médio  — &, ícones, links)
---azul3: #5EADF2   (claro  — bordas, halos, ripples)
---azul4: #8DC3F2   (pálido — sombras, shimmer)
---creme: #f4f7fc   (fundo principal)
---ink:   #12213d   (texto principal)
+index.html          → <meta refresh> para ./carta/
+carta/index.html    → capa (envelope + selo clicável), CSS inline, container queries
+convite/
+├── index.html      → 9 seções + modal PIX
+├── style.css       → estilos e os 2 temas
+└── app.js          → 8 IIFEs independentes
+assets/{audio,carta,flowers,photos,pix,venue,reference}/
+docs/               → PROJETO.md · CHANGELOG.md · DEPLOY.md
+serve.js            → dev server (node serve.js → :3000)
 ```
 
-**NUNCA usar verdes** (`#4a7c6f`, `#16301f`, `#eef2ea`, `rgba(74,124,111,...)` etc.).
+Antes de editar, leia `docs/PROJETO.md` — é a referência completa.
+
+## Temas
+
+Dois temas, alternados pelo botão do header, persistidos em
+`localStorage["convite-theme"]`:
+
+- `serenity` (claro, **padrão**) — vive em `:root`, sem atributo no `<html>`
+- `shadow-serenity` (escuro) — `<html data-theme="shadow-serenity">`, ~120 overrides
+
+```
+/* Serenity */                    /* Shadow Serenity */
+--azul1: #3d6e9e                  --azul1: #1C2333
+--azul2: #5a8ab8                  --azul2: #2E3A52
+--azul3: #8BADD9                  --azul3: #455673
+--azul4: #B6D6F2                  --azul4: #2F3D51
+--verde: #4a7aab                  --verde: #7DB3E3
+--creme: #f0f5f8                  --creme: #0F1419
+--ink:   #1a2b38                  --ink:   #E8EEF5
+```
+
+⚠️ `--verde` / `--verde2` são **nomes legados** e contêm **azuis**. Nunca
+colocar verde real neles. Toda alteração de cor precisa ser feita nos **dois**
+temas.
 
 ## Tipografia
 
 | Uso | Fonte |
 |---|---|
-| Nomes (Mayane, Lucas) | `Great Vibes` `clamp(82px,19vw,136px)` |
-| `&` | `Cormorant Garamond italic 300` `clamp(52px,11vw,78px)` |
-| Títulos | `Great Vibes` `clamp(52px,13vw,68px)` |
-| Corpo | `Raleway` |
+| Nomes dos noivos | `Great Vibes` `clamp(82px,19vw,136px)` |
+| Títulos de seção | `Great Vibes` |
+| `&`, versículos, data, countdown | `Cormorant Garamond` |
+| Corpo, labels | `Raleway` |
 
-## Regras Críticas
+## Módulos de `app.js`
 
-### ✅ SEMPRE
-- Fotos como `<img height:auto>` — nunca `background-image` fixo
-- `animation: ... forwards` nas flores (não `both`)
-- `transform-origin: center center` nos ripple rings
-- `transform-origin: top center` no monograma
-- `flor_sem_fundo.png` para TODAS as flores
-- `{passive:true}` no scroll listener
-- Parar `requestAnimationFrame` quando `Math.abs(v) < 0.05`
+Temas · Monograma (likes) · Countdown · Player · Scroll reveal · Flores
+(física de scroll + migração para o header) · Header height (`--header-h`) ·
+Modal PIX.
 
-### ❌ NUNCA
-- `background-attachment: fixed` com imagem → distorce aquarela
-- `backdrop-filter` no monograma → desfoca o casal
-- `overflow:hidden` no `.hero` → corta o `&`
-- `animation: ... both` nas flores → pisca ao sair do hover
-- `transform-origin: top center` nos ripple rings → onda nasce só do topo
-- GSAP via CDN externo
+Globais expostas para `onclick`: `playerToggle`, `openPixModal`,
+`closePixModal`, `copyPixKey`.
 
-## Interações JavaScript Implementadas (v1_aquarela)
+## Regras críticas
 
-1. **Monograma likes**: clique +6% escala (máx 2.2×), micro-bounce, corações flutuantes, reset 4s
-2. **Ripple rings**: 3 anéis concêntricos em hover, `transform-origin: center center`
-3. **Scroll physics**: `requestAnimationFrame` com `DAMP=0.82`, flores giram em sentidos opostos
-4. **Header flores**: `IntersectionObserver` migra flores do hero para o header ao rolar
-5. **Countdown**: `setInterval` para `2026-10-18T13:30:00`, dias/horas/min/seg
+### ✅ Sempre
+- Fotos como `<img>` com `height:auto`, `loading="lazy"`
+- Caminhos relativos `../assets/…`
+- `animation: … forwards` nas flores (nunca `both`)
+- `transform-origin: center center` nos ripple rings; `top center` no monograma
+- `{passive:true}` em `scroll` / `resize`; parar o rAF quando `Math.abs(v) < 0.05`
+- Guardas de existência (`if(!el) return;`) em cada IIFE
+- JS em ES5 (`var`, `function`) — é o estilo consistente do arquivo
+
+### ❌ Nunca
+- Imagens em base64 no HTML (foram removidas de propósito: −406 KB)
+- `background-attachment: fixed` em imagem
+- `backdrop-filter` no monograma — desfoca o casal
+- `overflow:hidden` no `.hero` — corta o `&`
+- `object-fit: cover` + altura fixa, ou `max-height` nas fotos no mobile
+- Caminho absoluto iniciando com `/` — quebra no GitHub Pages
+- CDN de JavaScript ou qualquer etapa de build
 
 ## Assets
 
 | Arquivo | Uso |
 |---|---|
-| `assets/local.jpeg` | Foto do local — `<img>` full-width na seção logo abaixo do hero |
-| `assets/noivos.jpeg` | Foto do casal — monograma oval no hero |
-| `assets/flor_sem_fundo.png` | Flores PNG com alpha — USAR PARA TUDO |
-| `assets/flor_lateral_direita.png` | ⚠️ TEM FUNDO BRANCO — não usar diretamente |
-| `.bob/*_b64.txt` | Cache base64 das imagens — não versionar |
+| `assets/carta/carta.png` | arte do envelope |
+| `assets/flowers/flor_serenity.png` | **todas** as flores |
+| `assets/photos/monograma.jpg` | monograma oval (setado por `app.js`) |
+| `assets/photos/noivos.jpeg` | seção final |
+| `assets/venue/local.jpeg` | foto do espaço |
+| `assets/pix/qrcode.jpeg` | modal PIX |
+| `assets/audio/anjos_cantam.m4a` | player |
+| `assets/reference/palheta_serenity.jpeg` | referência de cor, não usada em produção |
 
-## Variantes
+## Verificação
 
-| Versão | Estilo | Status |
-|---|---|---|
-| `v1_aquarela/` | Azul aquarela, creme | ✅ Principal |
-| `v2_luxo/` | Dark + ouro | Estrutura igual ao v1 |
-| `v3_botanico/` | Verde botânico, claro | Estrutura igual ao v1 |
-| `v4_noturno/` | Dark azul noturno | Estrutura igual ao v1 |
+```bash
+node serve.js   # http://127.0.0.1:3000
+```
+
+Checar console sem 404, os dois temas e os breakpoints
+(360 / 480 / 768 / 1024 / 1920px). Checklist completo em `docs/DEPLOY.md`.

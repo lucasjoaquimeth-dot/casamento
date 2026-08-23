@@ -49,7 +49,7 @@
 /* ── Monograma — foto + likes + crescimento para baixo + contexto recua ── */
 (function(){
   var mbg = document.getElementById("mBg");
-  if(mbg){ mbg.style.backgroundImage = "url('../assets/photos/M_L-137.jpg')"; }
+  if(mbg){ mbg.style.backgroundImage = "url('../assets/photos/monograma.jpg')"; }
 
   var COLORS    = ["#5A7B9F","#7DB3E3","#8AC0ED","#95C8F5"];  /* Serenity Blues */
   var clicks    = 0;
