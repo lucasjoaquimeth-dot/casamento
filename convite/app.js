@@ -351,7 +351,6 @@
   var hFlorR = document.getElementById("hFlorR");
   if(!florL || !florR || !hdr || !hFlorL || !hFlorR) return;
 
-  var DEFAULT_SRC = florL.getAttribute("src");
   var SERENITY_SRC = "../assets/flowers/flor_serenity.png";
   var addrFlorL = document.getElementById("addrFlorL");
   var addrFlorR = document.getElementById("addrFlorR");
@@ -377,13 +376,8 @@
     syncFlowers(!!detail.animate);
   });
 
-  function isSerenity(){
-    var theme = document.documentElement.getAttribute("data-theme");
-    return theme === "serenity" || theme === "shadow-serenity";
-  }
-
   function getThemeSrc(){
-    return isSerenity() ? SERENITY_SRC : DEFAULT_SRC;
+    return SERENITY_SRC;
   }
 
   function syncFlowers(animate){
