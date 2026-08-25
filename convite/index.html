@@ -66,8 +66,13 @@
   <!-- divisória entre player e foto do local -->
   <div class="orn"><span>&#10022;</span></div>
 
-  <div class="local-wrap">
+  <div class="local-wrap" id="localWrap">
     <img src="../assets/venue/local.jpeg" alt="Local do casamento — Vale Verde Espaço Acqua" loading="lazy" decoding="async">
+    <div class="local-hint">Clique e segure 🎬</div>
+  </div>
+
+  <div id="venueOverlay">
+    <video id="venueVideo" src="../assets/mp4/local.mp4" playsinline muted loop preload="none"></video>
   </div>
 </section>
 
@@ -274,6 +279,55 @@
     </div>
   </div>
 </div>
+
+<script>
+(function () {
+  var wrap    = document.getElementById('localWrap');
+  var overlay = document.getElementById('venueOverlay');
+  var video   = document.getElementById('venueVideo');
+  var hint    = wrap.querySelector('.local-hint');
+
+  var holdTimer = null;
+  var active    = false;
+  var HOLD_MS   = 300; // ms antes de abrir
+
+  function open() {
+    active = true;
+    overlay.classList.add('active');
+    video.currentTime = 0;
+    video.play();
+  }
+
+  function close() {
+    if (!active) return;
+    active = false;
+    overlay.classList.remove('active');
+    video.pause();
+  }
+
+  // Esconde a dica depois de 3 s ou ao primeiro uso
+  setTimeout(function () {
+    if (hint) hint.classList.add('hidden');
+  }, 3000);
+
+  // ── Touch / Mouse down ──
+  wrap.addEventListener('pointerdown', function (e) {
+    e.preventDefault();
+    if (hint) hint.classList.add('hidden');
+    holdTimer = setTimeout(open, HOLD_MS);
+  });
+
+  // ── Soltar ──
+  function handleRelease() {
+    clearTimeout(holdTimer);
+    close();
+  }
+
+  // Registra no document para capturar o "soltar" em qualquer lugar da tela
+  document.addEventListener('pointerup',     handleRelease);
+  document.addEventListener('pointercancel', handleRelease);
+})();
+</script>
 
 </body>
 </html>
