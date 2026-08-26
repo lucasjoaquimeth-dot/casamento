@@ -1,7 +1,7 @@
 /* ── Sistema de temas ── */
 (function(){
   var THEMES = ["serenity", "shadow-serenity"];
-  var LABELS = { "serenity": "Serenity", "shadow-serenity": "Shadow Serenity" };
+  var LABELS = { "serenity": "Light", "shadow-serenity": "Shadow" };
 
   /* aplica tema salvo imediatamente (evita flash) */
   var saved = localStorage.getItem("convite-theme") || "serenity";
